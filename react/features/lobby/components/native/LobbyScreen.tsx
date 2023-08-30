@@ -160,7 +160,7 @@ class LobbyScreen extends AbstractLobbyScreen<IProps> {
                 customStyles = {{ input: styles.customInput }}
                 error = { _passwordJoinFailed }
                 onChange = { this._onChangePassword }
-                placeholder = { t('lobby.enterPasswordButton') }
+                placeholder = { t('lobby.passwordField') }
                 secureTextEntry = { true }
                 value = { this.state.password } />
         );

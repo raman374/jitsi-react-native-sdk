@@ -59,7 +59,7 @@ class FormRow extends Component<IProps> {
      * @returns {ReactElement}
      */
     render() {
-        const { t } = this.props;
+        const { layout, t } = this.props;
 
         // Some field types need additional props to look good and standardized
         // on a form.
@@ -75,7 +75,8 @@ class FormRow extends Component<IProps> {
                     <Text
                         style = { [
                             styles.text,
-                            styles.fieldLabelText
+                            styles.fieldLabelText,
+                            layout === 'column' ? styles.fieldLabelTextColumn : undefined
                         ] } >
                         { t(this.props.label) }
                     </Text>

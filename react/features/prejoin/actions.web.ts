@@ -259,9 +259,6 @@ export function joinConference(options?: Object, ignoreJoiningInProgress = false
             const jitsiTracks = localTracks.map((t: any) => t.jitsiTrack);
 
             APP.conference.startConference(jitsiTracks).catch(logger.error);
-        })
-        .catch(() => {
-            // There is nothing to do here. This is handled and dispatched in base/connection/actions.
         });
     };
 }

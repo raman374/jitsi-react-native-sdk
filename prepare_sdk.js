@@ -69,7 +69,7 @@ function mergeDependencyVersions() {
 }
 
 // TODO: put this in a seperate step
-// mergeDependencyVersions();
+mergeDependencyVersions();
 
 copyFolderRecursiveSync(
     '../images',

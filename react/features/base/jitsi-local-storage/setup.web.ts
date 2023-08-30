@@ -1,8 +1,8 @@
-// @ts-ignore
-import { jitsiLocalStorage } from '@jitsi/js-utils/jitsi-local-storage';
+// @ts-expect-error
+import Bourne from '@hapi/bourne';
 // eslint-disable-next-line lines-around-comment
-// @ts-ignore
-import { safeJsonParse } from '@jitsi/js-utils/json';
+// @ts-expect-error
+import { jitsiLocalStorage } from '@jitsi/js-utils/jitsi-local-storage';
 
 import { browser } from '../lib-jitsi-meet';
 import { inIframe } from '../util/iframeUtils';
@@ -61,14 +61,7 @@ function setupJitsiLocalStorage() {
 
     if (shouldUseHostPageLocalStorage(urlParams)) {
         try {
-            const localStorageContent = safeJsonParse(urlParams['appData.localStorageContent']);
-
-            // We need to disable the local storage before setting the data in case the browser local storage doesn't
-            // throw exception (in some cases when this happens the local storage may be cleared for every session.
-            // Example: when loading meet from cross-domain with the IFrame API with Brave with the default
-            // configuration). Otherwise we will set the data in the browser local storage and then switch to the dummy
-            // local storage from jitsiLocalStorage and we will loose the data.
-            jitsiLocalStorage.setLocalStorageDisabled(true);
+            const localStorageContent = Bourne.parse(urlParams['appData.localStorageContent']);
 
             if (typeof localStorageContent === 'object') {
                 Object.keys(localStorageContent).forEach(key => {
@@ -79,6 +72,7 @@ function setupJitsiLocalStorage() {
             logger.error('Can\'t parse localStorageContent.', error);
         }
 
+        jitsiLocalStorage.setLocalStorageDisabled(true);
         jitsiLocalStorage.on('changed', onFakeLocalStorageChanged);
     }
 }

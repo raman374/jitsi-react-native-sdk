@@ -1,8 +1,8 @@
-// @ts-ignore
-import { jitsiLocalStorage } from '@jitsi/js-utils';
+// @ts-expect-error
+import Bourne from '@hapi/bourne';
 // eslint-disable-next-line lines-around-comment
-// @ts-ignore
-import { safeJsonParse } from '@jitsi/js-utils/json';
+// @ts-expect-error
+import { jitsiLocalStorage } from '@jitsi/js-utils';
 import _ from 'lodash';
 
 import { IReduxState } from '../../app/types';
@@ -223,7 +223,7 @@ export function restoreConfig(baseURL: string) {
 
     if (config) {
         try {
-            return safeJsonParse(config) || undefined;
+            return Bourne.parse(config) || undefined;
         } catch (e) {
             // Somehow incorrect data ended up in the storage. Clean it up.
             jitsiLocalStorage.removeItem(key);

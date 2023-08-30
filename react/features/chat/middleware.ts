@@ -130,10 +130,7 @@ MiddlewareRegistry.register(store => next => action => {
             // recipient. This logic tries to mitigate this risk.
             const shouldSendPrivateMessageTo = _shouldSendPrivateMessageTo(state, action);
 
-            const participantExists = shouldSendPrivateMessageTo
-                && getParticipantById(state, shouldSendPrivateMessageTo);
-
-            if (shouldSendPrivateMessageTo && participantExists) {
+            if (shouldSendPrivateMessageTo) {
                 dispatch(openDialog(ChatPrivacyDialog, {
                     message: action.message,
                     participantID: shouldSendPrivateMessageTo

@@ -7,6 +7,7 @@ import {
 } from '../base/conference/actionTypes';
 import { isRoomValid } from '../base/conference/functions';
 import { CONNECTION_ESTABLISHED, CONNECTION_FAILED } from '../base/connection/actionTypes';
+import { hangup } from '../base/connection/actions';
 import { hideDialog } from '../base/dialog/actions';
 import { isDialogOpen } from '../base/dialog/functions';
 import {
@@ -15,6 +16,8 @@ import {
 } from '../base/lib-jitsi-meet';
 import MiddlewareRegistry from '../base/redux/MiddlewareRegistry';
 import { getBackendSafeRoomName } from '../base/util/uri';
+import { showErrorNotification } from '../notifications/actions';
+import { NOTIFICATION_TIMEOUT_TYPE } from '../notifications/constants';
 import { openLogoutDialog } from '../settings/actions';
 
 import {
@@ -28,7 +31,6 @@ import {
 import {
     hideLoginDialog,
     openLoginDialog,
-    openTokenAuthUrl,
     openWaitForOwnerDialog,
     redirectToDefaultLocation,
     setTokenAuthUrlSuccess,
@@ -37,8 +39,6 @@ import {
 } from './actions';
 import { LoginDialog, WaitForOwnerDialog } from './components';
 import { getTokenAuthUrl, isTokenAuthEnabled } from './functions';
-import logger from './logger';
-
 
 /**
  * Middleware that captures connection or conference failed errors and controls
@@ -163,7 +163,33 @@ MiddlewareRegistry.register(store => next => action => {
     }
 
     case LOGOUT: {
-        _handleLogout(store);
+        const { dispatch, getState } = store;
+        const state = getState();
+        const config = state['features/base/config'];
+        const { conference } = store.getState()['features/base/conference'];
+
+        if (!conference) {
+            break;
+        }
+
+        dispatch(openLogoutDialog(() => {
+            const logoutUrl = config.tokenLogoutUrl;
+
+            if (isTokenAuthEnabled(config)
+                && config.tokenAuthUrlAutoRedirect
+                && state['features/base/jwt'].jwt) {
+                // user is logging out remove auto redirect indication
+                dispatch(setTokenAuthUrlSuccess(false));
+            }
+
+            if (logoutUrl) {
+                window.location.href = logoutUrl;
+
+                return;
+            }
+
+            conference.room.moderator.logout(() => dispatch(hangup(true)));
+        }));
 
         break;
     }
@@ -256,45 +282,31 @@ function _handleLogin({ dispatch, getState }: IStore) {
     const config = state['features/base/config'];
     const room = getBackendSafeRoomName(state['features/base/conference'].room);
 
-    if (!room) {
-        logger.warn('Cannot handle login, room is undefined!');
+    if (isTokenAuthEnabled(config)) {
+        if (typeof APP === 'undefined') {
+            dispatch(showErrorNotification({
+                descriptionKey: 'dialog.tokenAuthUnsupported',
+                titleKey: 'dialog.tokenAuthFailedTitle'
+            }, NOTIFICATION_TIMEOUT_TYPE.LONG));
 
-        return;
-    }
+            dispatch(redirectToDefaultLocation());
 
-    if (!isTokenAuthEnabled(config)) {
+            return;
+        }
+
+        if (!room) {
+            return;
+        }
+
+        // FIXME: This method will not preserve the other URL params that were originally passed.
+        const tokenAuthServiceUrl = getTokenAuthUrl(config, room);
+
+        if (tokenAuthServiceUrl) {
+            // we have already shown the prejoin screen, so no need to show it again after obtaining the token
+            window.location.href = `${tokenAuthServiceUrl}${
+                tokenAuthServiceUrl.includes('#') ? '&' : '#'}skipPrejoin=true`;
+        }
+    } else {
         dispatch(openLoginDialog());
-
-        return;
     }
-
-    // FIXME: This method will not preserve the other URL params that were originally passed.
-    const tokenAuthServiceUrl = getTokenAuthUrl(config, room);
-
-    if (!tokenAuthServiceUrl) {
-        logger.warn('Cannot handle login, token service URL is not set');
-
-        return;
-    }
-
-    dispatch(openTokenAuthUrl(tokenAuthServiceUrl));
-}
-
-/**
- * Handles logout challenge. Opens logout dialog and hangs up the conference.
- *
- * @param {Store} store - The redux store in which the specified {@code action}
- * is being dispatched.
- * @param {string} logoutUrl - The url for logging out.
- * @returns {void}
- */
-function _handleLogout({ dispatch, getState }: IStore) {
-    const state = getState();
-    const { conference } = state['features/base/conference'];
-
-    if (!conference) {
-        return;
-    }
-
-    dispatch(openLogoutDialog());
 }

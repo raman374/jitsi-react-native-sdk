@@ -12,11 +12,6 @@ import { navigationStyles } from './styles';
 interface IProps {
 
     /**
-     * Icon button color.
-     */
-    color?: string;
-
-    /**
      * Is the button disabled?
      */
     disabled?: boolean;
@@ -47,7 +42,7 @@ interface IProps {
     twoActions?: boolean;
 }
 
-const HeaderNavigationButton = ({ color, disabled, label, onPress, src, style, twoActions }: IProps) => {
+const HeaderNavigationButton = ({ disabled, label, onPress, src, style, twoActions }: IProps) => {
 
     let btnStyle;
     let labelStyle;
@@ -69,7 +64,6 @@ const HeaderNavigationButton = ({ color, disabled, label, onPress, src, style, t
             {
                 src ? (
                     <IconButton
-                        color = { color }
                         onPress = { onPress }
                         size = { 24 }
                         src = { src }

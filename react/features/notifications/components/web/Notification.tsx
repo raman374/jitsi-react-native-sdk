@@ -129,7 +129,6 @@ const useStyles = makeStyles()((theme: Theme) => {
             ...withPixelLineHeight(theme.typography.bodyShortRegular),
             overflow: 'auto',
             overflowWrap: 'break-word',
-            userSelect: 'all',
 
             '&:not(:empty)': {
                 marginTop: theme.spacing(1)

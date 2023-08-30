@@ -10,11 +10,6 @@ import type { IProps as AbstractToolboxItemProps } from './AbstractToolboxItem';
 interface IProps extends AbstractToolboxItemProps {
 
     /**
-     * The button's background color.
-     */
-    backgroundColor?: string;
-
-    /**
      * Whether or not the item is displayed in a context menu.
      */
     contextMenu?: boolean;
@@ -65,7 +60,6 @@ export default class ToolboxItem extends AbstractToolboxItem<IProps> {
      */
     _renderItem() {
         const {
-            backgroundColor,
             contextMenu,
             disabled,
             elementAfter,
@@ -96,7 +90,6 @@ export default class ToolboxItem extends AbstractToolboxItem<IProps> {
             return (
                 <ContextMenuItem
                     accessibilityLabel = { this.accessibilityLabel }
-                    backgroundColor = { backgroundColor }
                     disabled = { disabled }
                     icon = { icon }
                     onClick = { onClick }
@@ -135,18 +128,14 @@ export default class ToolboxItem extends AbstractToolboxItem<IProps> {
      * @returns {ReactElement}
      */
     _renderIcon() {
-        const { backgroundColor, customClass, disabled, icon, showLabel, toggled } = this.props;
+        const { customClass, disabled, icon, showLabel, toggled } = this.props;
         const iconComponent = (<Icon
             size = { showLabel ? undefined : 24 }
             src = { icon } />);
         const elementType = showLabel ? 'span' : 'div';
         const className = `${showLabel ? 'overflow-menu-item-icon' : 'toolbox-icon'} ${
             toggled ? 'toggled' : ''} ${disabled ? 'disabled' : ''} ${customClass ?? ''}`;
-        const style = backgroundColor && !showLabel ? { backgroundColor } : {};
 
-        return React.createElement(elementType, {
-            className,
-            style
-        }, iconComponent);
+        return React.createElement(elementType, { className }, iconComponent);
     }
 }

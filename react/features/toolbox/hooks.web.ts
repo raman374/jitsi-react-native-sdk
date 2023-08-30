@@ -42,8 +42,9 @@ export const useKeyboardShortcuts = (toolbarButtons: Array<string>) => {
     const desktopSharingEnabled = JitsiMeetJS.isDesktopSharingEnabled();
     const fullScreen = useSelector((state: IReduxState) => state['features/toolbox'].fullScreen);
     const gifsEnabled = useSelector(isGifEnabled);
+    const localParticipant = useSelector(getLocalParticipant);
     const participantsPaneOpen = useSelector(getParticipantsPaneOpen);
-    const raisedHand = useSelector((state: IReduxState) => hasRaisedHand(getLocalParticipant(state)));
+    const raisedHand = hasRaisedHand(localParticipant);
     const reactionsEnabled = useSelector(isReactionsEnabled);
     const screenSharing = useSelector(isScreenVideoShared);
     const tileViewEnabled = useSelector(shouldDisplayTileView);
@@ -305,15 +306,5 @@ export const useKeyboardShortcuts = (toolbarButtons: Array<string>) => {
                         dispatch(unregisterShortcut(letter, true)));
             }
         };
-    }, [
-        chatOpen,
-        desktopSharingButtonDisabled,
-        desktopSharingEnabled,
-        fullScreen,
-        gifsEnabled,
-        participantsPaneOpen,
-        raisedHand,
-        screenSharing,
-        tileViewEnabled
-    ]);
+    }, []);
 };

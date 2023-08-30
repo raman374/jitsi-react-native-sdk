@@ -17,11 +17,6 @@ export interface IProps extends WithTranslation {
     afterClick?: Function;
 
     /**
-     * The button's background color.
-     */
-    backgroundColor?: string;
-
-    /**
      * The button's key.
      */
     buttonKey?: string;
@@ -112,13 +107,6 @@ export default class AbstractButton<P extends IProps, S=any> extends Component<P
         tooltipPosition: 'top',
         visible: true
     };
-
-    /**
-     * The button's background color.
-     *
-     * @abstract
-     */
-    backgroundColor?: string;
 
     /**
      * A succinct description of what the button does. Used by accessibility

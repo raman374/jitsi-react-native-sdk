@@ -1,8 +1,8 @@
-// @ts-ignore
-import { jitsiLocalStorage } from '@jitsi/js-utils';
+// @ts-expect-error
+import Bourne from '@hapi/bourne';
 // eslint-disable-next-line lines-around-comment
-// @ts-ignore
-import { safeJsonParse } from '@jitsi/js-utils/json';
+// @ts-expect-error
+import { jitsiLocalStorage } from '@jitsi/js-utils';
 import md5 from 'js-md5';
 
 import logger from './logger';
@@ -193,7 +193,7 @@ class PersistenceRegistry {
 
         if (persistedSubtree) {
             try {
-                persistedSubtree = safeJsonParse(persistedSubtree);
+                persistedSubtree = Bourne.parse(persistedSubtree);
 
                 const filteredSubtree
                     = this._getFilteredSubtree(persistedSubtree, subtreeConfig);
